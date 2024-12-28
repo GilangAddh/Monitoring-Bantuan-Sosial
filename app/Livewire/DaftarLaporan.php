@@ -29,6 +29,8 @@ class DaftarLaporan extends Component
     public $modalAction = '';
     public $recordId = null;
     public $modalTitle = '';
+    public $old_bukti_penyaluran = '';
+
     public function openModal($action, $recordId = null)
     {
         $this->resetModal();
@@ -45,7 +47,7 @@ class DaftarLaporan extends Component
     public function resetModal()
     {
         $this->resetValidation();
-        $this->reset(['isModalOpen', 'modalTitle', 'modalAction', 'recordId', 'nama_program', 'jumlah_penerima', 'selectedProvince', 'selectedRegency', 'selectedDistrict', 'bukti_penyaluran', 'catatan']);
+        $this->reset(['isModalOpen', 'modalTitle', 'modalAction', 'recordId', 'nama_program', 'jumlah_penerima', 'selectedProvince', 'selectedRegency', 'selectedDistrict', 'bukti_penyaluran', 'catatan', 'old_bukti_penyaluran']);
     }
 
     public function fetchProvinces()
@@ -91,13 +93,49 @@ class DaftarLaporan extends Component
     {
         $this->kecamatan = collect($this->districts)->firstWhere('code', $value);
     }
+    private function loadRecordData()
+    {
+        $laporan = ModelsDaftarLaporan::findOrFail($this->recordId);
+        $this->nama_program = $laporan->nama_program;
+        $this->jumlah_penerima = $laporan->jumlah_penerima;
+        $this->provinsi = $laporan->provinsi;
+        $this->kabupaten = $laporan->kabupaten;
+        $this->kecamatan = $laporan->kecamatan;
+        $this->selectedProvince = $laporan->kode_provinsi;
+        $this->selectedRegency = $laporan->kode_kabupaten;
+        $this->selectedDistrict = $laporan->kode_kecamatan;
+        $this->old_bukti_penyaluran = $laporan->bukti_penyaluran;
+        $this->catatan = $laporan->catatan;
+        $this->fetchRegencies($this->selectedProvince);
+        $this->fetchDistricts($this->selectedRegency);
+    }
     public function saveData()
     {
         // $this->validate();
 
         if ($this->modalAction === 'edit') {
-            $user = ModelsDaftarLaporan::findOrFail($this->recordId);
-            $user->update($this->only(['nama_standar', 'nomer_dokumen', 'nomer_revisi', 'tanggal_terbit', 'is_active']));
+            $laporan = ModelsDaftarLaporan::findOrFail($this->recordId);
+
+            if ($this->bukti_penyaluran) {
+                $originalFileName = $this->bukti_penyaluran->getClientOriginalName();
+                $newFileName = time() . '_' . $originalFileName;
+                $this->bukti_penyaluran->storeAs('public/bukti_penyaluran', $newFileName);
+            } else {
+                $newFileName = $this->old_bukti_penyaluran;
+            }
+
+            $laporan->update([
+                'nama_program' => $this->nama_program,
+                'jumlah_penerima' => $this->jumlah_penerima,
+                'provinsi' => $this->provinsi['name'] ?? $laporan->provinsi,
+                'kabupaten' => $this->kabupaten['name'] ?? $laporan->kabupaten,
+                'kecamatan' => $this->kecamatan['name'] ?? $laporan->kecamatan,
+                'kode_provinsi' => $this->selectedProvince,
+                'kode_kabupaten' => $this->selectedRegency,
+                'kode_kecamatan' => $this->selectedDistrict,
+                'bukti_penyaluran' => $newFileName,
+                'catatan' => $this->catatan,
+            ]);
         } else {
             $originalFileName = $this->bukti_penyaluran->getClientOriginalName();
             $newFileName = time() . '_' . $originalFileName;

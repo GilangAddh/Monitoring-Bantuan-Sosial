@@ -2,7 +2,7 @@
     <div class="breadcrumbs text-md">
         <ul>
             <li>Daftar Laporan</li>
-            <li><a wire:navigate class="text-[#60C0D0] text-medium" href="/standar-audit">Index</a>
+            <li><a wire:navigate class="text-[#60C0D0] text-medium" href="#">Index</a>
             </li>
         </ul>
     </div>
@@ -117,7 +117,7 @@
                             <span class="label-text md:text-[16px]">Nama Program <span
                                     class="text-red-500">*</span></span>
                         </div>
-                        <select id="province"
+                        <select {{ $modalAction === 'lihat' ? 'disabled' : '' }} id="program"
                             class="input input-bordered w-full input-md rounded-lg @error('nama_program') border-red-500 @enderror"
                             wire:model.live='nama_program'>
                             <option value="">Pilih Nama Program</option>
@@ -149,7 +149,7 @@
                             <span class="label-text md:text-[16px]">Pilih Provinsi <span
                                     class="text-red-500">*</span></span>
                         </div>
-                        <select id="province"
+                        <select id="province" {{ $modalAction === 'lihat' ? 'disabled' : '' }}
                             class="input input-bordered w-full input-md rounded-lg @error('provinsi') border-red-500 @enderror"
                             wire:model.live='selectedProvince'>
                             <option value="">Pilih Provinsi</option>
@@ -163,13 +163,13 @@
                         @enderror
                     </label>
                     @if ($selectedProvince)
-
                         <label class="form-control w-full mb-2">
                             <div class="label">
                                 <span class="label-text md:text-[16px]">Pilih Kabupaten/Kota <span
                                         class="text-red-500">*</span></span>
                             </div>
-                            <select id="regency" wire:model.live="selectedRegency"
+                            <select id="regency" {{ $modalAction === 'lihat' ? 'disabled' : '' }}
+                                wire:model.live="selectedRegency"
                                 class="input input-bordered w-full input-md rounded-lg @error('selectedRegency') border-red-500 @enderror">
                                 <option value="">Pilih Kabupaten/Kota</option>
                                 @foreach ($regencies as $regency)
@@ -183,13 +183,13 @@
                         </label>
                     @endif
                     @if ($selectedRegency)
-
                         <label class="form-control w-full mb-2">
                             <div class="label">
                                 <span class="label-text md:text-[16px]">Pilih Kecamatan <span
                                         class="text-red-500">*</span></span>
                             </div>
-                            <select id="district" wire:model="selectedDistrict"
+                            <select id="district" {{ $modalAction === 'lihat' ? 'disabled' : '' }}
+                                wire:model="selectedDistrict"
                                 class="input input-bordered w-full input-md rounded-lg @error('selectedDistrict') border-red-500 @enderror">
                                 <option value="">Pilih Kecamatan</option>
                                 @foreach ($districts as $district)
@@ -207,6 +207,10 @@
                             <span class="label-text md:text-[16px]">Bukti Penyaluran <span
                                     class="text-red-500">*</span></span>
                         </div>
+                        <a href="{{ asset('storage/bukti_penyaluran/' . $old_bukti_penyaluran) }}"
+                            class="link link-hover text-blue-500" target="_blank">
+                            Download {{ $old_bukti_penyaluran }}
+                        </a>
                         <input {{ $modalAction === 'lihat' ? 'disabled' : '' }} type="file"
                             wire:model="bukti_penyaluran"
                             class="file-input file-input-bordered w-full @error('bukti_penyaluran') border-red-500 @enderror" />
@@ -226,7 +230,8 @@
                         <div class="label">
                             <span class="label-text md:text-[16px]">Catatan Tambahan</span>
                         </div>
-                        <textarea class="textarea textarea-bordered w-full @error('catatan') border-red-500 @enderror" rows="3"
+                        <textarea {{ $modalAction === 'lihat' ? 'disabled' : '' }}
+                            class="textarea textarea-bordered w-full @error('catatan') border-red-500 @enderror" rows="3"
                             wire:model='catatan'></textarea>
 
                         @error('catatan')
