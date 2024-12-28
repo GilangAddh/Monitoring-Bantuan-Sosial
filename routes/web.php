@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\DaftarLaporan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,11 +16,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
+    return redirect()->route('login');
 });
 
 Route::middleware([
     'auth:sanctum',
+    config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
@@ -29,6 +35,7 @@ Route::middleware([
 
 Route::middleware([
     'auth:sanctum',
+    config('jetstream.auth_session'),
     'verified',
     'role:admin'
 ])->group(function () {
@@ -38,6 +45,7 @@ Route::middleware([
 
 Route::middleware([
     'auth:sanctum',
+    config('jetstream.auth_session'),
     'verified',
     'role:daerah'
 ])->group(function () {
