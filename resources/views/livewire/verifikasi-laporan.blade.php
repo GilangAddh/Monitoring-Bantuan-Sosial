@@ -1,7 +1,7 @@
 <div class="px-5 py-4">
     <div class="breadcrumbs text-md">
         <ul>
-            <li>Daftar Laporan</li>
+            <li>Verifikasi Laporan</li>
             <li><a wire:navigate class="text-[#60C0D0] text-medium" href="#">Index</a>
             </li>
         </ul>
@@ -74,11 +74,8 @@
                                 <button wire:click="openModal('lihat', {{ $item->id }})">
                                     <i class="fas fa-eye text-black"></i>
                                 </button>
-                                <button wire:click="openModal('edit', {{ $item->id }})">
-                                    <i class="fas fa-edit text-black"></i>
-                                </button>
-                                <button wire:click="openModal('hapus', {{ $item->id }})">
-                                    <i class="fas fa-trash text-black"></i>
+                                <button wire:click="openModal('verifikasi', {{ $item->id }})">
+                                    <i class="fa-solid fa-circle-check"></i>
                                 </button>
                             </div>
                         </th>
@@ -100,20 +97,47 @@
             <h3 class="text-lg font-bold mb-4">{{ $modalTitle }}</h3>
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" wire:click="resetModal">✕</button>
 
+            @if ($modalAction == 'verifikasi')
+                <form wire:submit.prevent="saveData">
+                    <label class="form-control w-full mb-2">
+                        <div class="label">
+                            <span class="label-text md:text-[16px]">Status Verifikasi <span
+                                    class="text-red-500">*</span></span>
+                        </div>
+                        <select id="verifikasi"
+                            class="input input-bordered w-full input-md rounded-lg @error('status') border-red-500 @enderror"
+                            wire:model.live='status'>
+                            <option value="0" selected disabled>Pilih Status Verifikasi</option>
+                            <option value="2">Disetujui</option>
+                            <option value="3">Ditolak</option>
+                        </select>
 
-            @if ($modalAction === 'hapus')
-                <p>Apakah anda yakin ingin menghapus data ini?
-                </p>
-                <div class="modal-action">
-                    <div class="flex space-x-2 justify-end">
-                        <button
-                            class="btn btn-sm btn-outline text-[#60c0d0] border-[#60c0d0] hover:bg-[#60c0d0] hover:text-white hover:border-none"
-                            wire:click="resetModal">Tutup</button>
+                        @error('status')
+                            <span class="text-red-500 text-sm error-message">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <label class="form-control w-full mb-2">
+                        <div class="label">
+                            <span class="label-text md:text-[16px]">Alasan Penolakan</span>
+                        </div>
+                        <textarea disabled class="textarea textarea-bordered w-full @error('alasan') border-red-500 @enderror" rows="3"
+                            wire:model='alasan'></textarea>
 
-                        <button class="btn btn-error btn-sm text-white" wire:click="delete">Ya,
-                            hapus</button>
+                        @error('alasan')
+                            <span class="text-red-500 text-sm error-message">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <div class="modal-action">
+                        <div class="flex space-x-2 justify-end">
+                            <button type="button"
+                                class="btn btn-sm btn-outline text-[#60c0d0] border-[#60c0d0] hover:bg-[#60c0d0] hover:text-white hover:border-none"
+                                wire:click="resetModal">Tutup</button>
+                            @if ($modalAction != 'lihat')
+                                <button type="submit" class="btn btn-sm bg-[#60c0d0] text-white">Simpan</button>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                </form>
             @else
                 <form wire:submit.prevent="saveData">
                     <label class="form-control w-full mb-2">
@@ -121,7 +145,7 @@
                             <span class="label-text md:text-[16px]">Nama Program <span
                                     class="text-red-500">*</span></span>
                         </div>
-                        <select {{ $modalAction === 'lihat' ? 'disabled' : '' }} id="program"
+                        <select disabled id="program"
                             class="input input-bordered w-full input-md rounded-lg @error('nama_program') border-red-500 @enderror"
                             wire:model.live='nama_program'>
                             <option value="">Pilih Nama Program</option>
@@ -140,8 +164,8 @@
                             <span class="label-text md:text-[16px]">Jumlah Penerima <span
                                     class="text-red-500">*</span></span>
                         </div>
-                        <input {{ $modalAction === 'lihat' ? 'disabled' : '' }} type="number"
-                            wire:model="jumlah_penerima" placeholder="Masukkan jumlah penerima"
+                        <input disabled type="number" wire:model="jumlah_penerima"
+                            placeholder="Masukkan jumlah penerima"
                             class="input input-bordered w-full input-md @error('jumlah_penerima') border-red-500 @enderror" />
 
                         @error('jumlah_penerima')
@@ -153,7 +177,7 @@
                             <span class="label-text md:text-[16px]">Pilih Provinsi <span
                                     class="text-red-500">*</span></span>
                         </div>
-                        <select id="province" {{ $modalAction === 'lihat' ? 'disabled' : '' }}
+                        <select id="province" disabled
                             class="input input-bordered w-full input-md rounded-lg @error('selectedProvince') border-red-500 @enderror"
                             wire:model.live='selectedProvince'>
                             <option value="">Pilih Provinsi</option>
@@ -172,8 +196,7 @@
                                 <span class="label-text md:text-[16px]">Pilih Kabupaten/Kota <span
                                         class="text-red-500">*</span></span>
                             </div>
-                            <select id="regency" {{ $modalAction === 'lihat' ? 'disabled' : '' }}
-                                wire:model.live="selectedRegency"
+                            <select id="regency" disabled wire:model.live="selectedRegency"
                                 class="input input-bordered w-full input-md rounded-lg @error('selectedRegency') border-red-500 @enderror">
                                 <option value="">Pilih Kabupaten/Kota</option>
                                 @foreach ($regencies as $regency)
@@ -192,8 +215,7 @@
                                 <span class="label-text md:text-[16px]">Pilih Kecamatan <span
                                         class="text-red-500">*</span></span>
                             </div>
-                            <select id="district" {{ $modalAction === 'lihat' ? 'disabled' : '' }}
-                                wire:model="selectedDistrict"
+                            <select id="district" disabled wire:model="selectedDistrict"
                                 class="input input-bordered w-full input-md rounded-lg @error('selectedDistrict') border-red-500 @enderror">
                                 <option value="">Pilih Kecamatan</option>
                                 @foreach ($districts as $district)
@@ -218,8 +240,7 @@
                             </a>
                         @endif
 
-                        <input {{ $modalAction === 'lihat' ? 'disabled' : '' }} type="file"
-                            wire:model="bukti_penyaluran"
+                        <input type="hidden" wire:model="bukti_penyaluran"
                             class="file-input file-input-bordered w-full @error('bukti_penyaluran') border-red-500 @enderror" />
                         @if ($bukti_penyaluran)
                             <a class="link link-hover underline hover:text-[#60c0d0]"
@@ -237,8 +258,7 @@
                         <div class="label">
                             <span class="label-text md:text-[16px]">Catatan Tambahan</span>
                         </div>
-                        <textarea {{ $modalAction === 'lihat' ? 'disabled' : '' }}
-                            class="textarea textarea-bordered w-full @error('catatan') border-red-500 @enderror" rows="3"
+                        <textarea disabled class="textarea textarea-bordered w-full @error('catatan') border-red-500 @enderror" rows="3"
                             wire:model='catatan'></textarea>
 
                         @error('catatan')
@@ -250,15 +270,15 @@
                             <button type="button"
                                 class="btn btn-sm btn-outline text-[#60c0d0] border-[#60c0d0] hover:bg-[#60c0d0] hover:text-white hover:border-none"
                                 wire:click="resetModal">Tutup</button>
-
                             @if ($modalAction != 'lihat')
-                                <button type="submit"
-                                    class="btn btn-sm bg-[#60c0d0] text-white">{{ $modalAction === 'edit' ? 'Simpan' : 'Tambah' }}</button>
+                                <button type="submit" class="btn btn-sm bg-[#60c0d0] text-white">Simpan</button>
                             @endif
                         </div>
                     </div>
                 </form>
             @endif
+
+
 
         </div>
     </dialog>

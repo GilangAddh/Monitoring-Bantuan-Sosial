@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\DaftarLaporan;
+use App\Livewire\VerifikasiLaporan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -39,8 +40,7 @@ Route::middleware([
     'verified',
     'role:admin'
 ])->group(function () {
-    // Route::get('/daftar-laporan', DaftarVerifikasi::class)->name('daftar-verifikasi');
-
+    Route::get('/verifikasi-laporan', VerifikasiLaporan::class)->name('daftar-verifikasi');
 });
 
 Route::middleware([

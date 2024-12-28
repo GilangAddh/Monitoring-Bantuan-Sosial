@@ -57,8 +57,28 @@
                     {{ $profileName }}
                 </div>
                 <!-- Sidebar content here -->
-                <li><a>Sidebar Item 1</a></li>
-                <li><a>Sidebar Item 2</a></li>
+                <li
+                    class="{{ Request::is('dashboard') ? 'bg-[#60c0d0] text-white' : '' }} hover:bg-[#60c0d0] hover:text-white rounded-md transition duration-200 my-1">
+                    <a href="/dashboard" class="flex items-center space-x-2 py-2 px-4">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                @if (auth()->user()->hasRole('daerah'))
+                    <li
+                        class="{{ Request::is('daftar-laporan') ? 'bg-[#60c0d0] text-white' : '' }} hover:bg-[#60c0d0] hover:text-white rounded-md transition duration-200 my-1">
+                        <a href="/daftar-laporan" class="flex items-center space-x-2 py-2 px-4">
+                            <span>Daftar Laporan</span>
+                        </a>
+                    </li>
+                @endif
+                @if (auth()->user()->hasRole('admin'))
+                    <li
+                        class="{{ Request::is('verifikasi-laporan') ? 'bg-[#60c0d0] text-white' : '' }} hover:bg-[#60c0d0] hover:text-white rounded-md transition duration-200 my-1">
+                        <a href="/verifikasi-laporan" class="flex items-center space-x-2 py-2 px-4">
+                            <span>Verifikasi Laporan</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
     </div>

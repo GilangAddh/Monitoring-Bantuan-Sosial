@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
-class DaftarLaporan extends Component
+class VerifikasiLaporan extends Component
 {
     use WithFileUploads;
 
@@ -187,7 +187,6 @@ class DaftarLaporan extends Component
                 'bukti_penyaluran' => $newFileName,
                 'catatan' => $this->catatan,
                 'created_by' => auth()->id(),
-                'status' => '1',
             ]);
         }
         $this->resetModal();
@@ -195,34 +194,22 @@ class DaftarLaporan extends Component
 
         $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data Laporan Bantuan berhasil disimpan."})');
     }
-    public function delete()
-    {
-        $standar = ModelsDaftarLaporan::findOrFail($this->recordId);
-        if ($standar->bukti_penyaluran && Storage::exists('public/bukti_penyaluran/' . $standar->bukti_penyaluran)) {
-            Storage::delete('public/bukti_penyaluran/' . $standar->bukti_penyaluran);
-        }
-        $standar->delete();
-        $this->resetModal();
-        $this->resetSearch();
 
-        $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data Laporan Bantuan berhasil dihapus."})');
-    }
     public function mount()
     {
         $this->fetchProvinces();
     }
     public function render()
     {
-        $laporan = ModelsDaftarLaporan::where('created_by', auth()->id()) // Filter berdasarkan user yang login
-            ->where(function ($query) { // Mengelompokkan kondisi pencarian
-                $query->where('provinsi', 'ilike', '%' . $this->search . '%')
-                    ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
-                    ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
-                    ->orWhere('nama_program', 'ilike', '%' . $this->search . '%');
-            })
+        $laporan = ModelsDaftarLaporan::where(function ($query) { // Mengelompokkan kondisi pencarian
+            $query->where('provinsi', 'ilike', '%' . $this->search . '%')
+                ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
+                ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
+                ->orWhere('nama_program', 'ilike', '%' . $this->search . '%');
+        })
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-        return view('livewire.daftar-laporan', ['laporan' => $laporan]);
+        return view('livewire.verifikasi-laporan', ['laporan' => $laporan]);
     }
 }
