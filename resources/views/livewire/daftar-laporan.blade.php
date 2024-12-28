@@ -98,7 +98,7 @@
 
 
             @if ($modalAction === 'hapus')
-                <p>Apakah anda yakin ingin menghapus <span class="text-red-500 font-medium">{{ $nama_standar }}</span>?
+                <p>Apakah anda yakin ingin menghapus data ini?
                 </p>
                 <div class="modal-action">
                     <div class="flex space-x-2 justify-end">
@@ -207,10 +207,13 @@
                             <span class="label-text md:text-[16px]">Bukti Penyaluran <span
                                     class="text-red-500">*</span></span>
                         </div>
-                        <a href="{{ asset('storage/bukti_penyaluran/' . $old_bukti_penyaluran) }}"
-                            class="link link-hover text-blue-500" target="_blank">
-                            Download {{ $old_bukti_penyaluran }}
-                        </a>
+                        @if ($modalAction != 'tambah')
+                            <a href="{{ asset('storage/bukti_penyaluran/' . $old_bukti_penyaluran) }}"
+                                class="link link-hover text-blue-500" target="_blank">
+                                Download {{ $old_bukti_penyaluran }}
+                            </a>
+                        @endif
+
                         <input {{ $modalAction === 'lihat' ? 'disabled' : '' }} type="file"
                             wire:model="bukti_penyaluran"
                             class="file-input file-input-bordered w-full @error('bukti_penyaluran') border-red-500 @enderror" />

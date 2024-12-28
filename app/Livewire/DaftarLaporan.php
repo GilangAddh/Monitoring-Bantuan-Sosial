@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\DaftarLaporan as ModelsDaftarLaporan;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -157,6 +158,17 @@ class DaftarLaporan extends Component
         $this->resetModal();
 
         $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data standar berhasil disimpan."})');
+    }
+    public function delete()
+    {
+        $standar = ModelsDaftarLaporan::findOrFail($this->recordId);
+        if ($standar->bukti_penyaluran && Storage::exists('public/bukti_penyaluran/' . $standar->bukti_penyaluran)) {
+            Storage::delete('public/bukti_penyaluran/' . $standar->bukti_penyaluran);
+        }
+        $standar->delete();
+        $this->resetModal();
+
+        $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data standar berhasil dihapus."})');
     }
     public function mount()
     {
