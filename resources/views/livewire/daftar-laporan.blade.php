@@ -87,7 +87,7 @@
                     <tr>
                         <td colspan="8" class="text-center">Tidak ada data yang ditemukan.</td>
                     </tr>
-                @endforelses
+                @endforelse
             </tbody>
         </table>
     </div>
