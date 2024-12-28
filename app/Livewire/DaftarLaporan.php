@@ -186,6 +186,7 @@ class DaftarLaporan extends Component
                 'kode_kecamatan' => $this->selectedDistrict,
                 'bukti_penyaluran' => $newFileName,
                 'catatan' => $this->catatan,
+                'created_by' => auth()->id(),
             ]);
         }
         $this->resetModal();
@@ -211,11 +212,16 @@ class DaftarLaporan extends Component
     }
     public function render()
     {
-        $laporan = ModelsDaftarLaporan::where('provinsi', 'ilike', '%' . $this->search . '%')
-            ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
-            ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
-            ->orWhere('nama_program', 'ilike', '%' . $this->search . '%')
-            ->orderBy("id", "desc")->paginate(10);
+        $laporan = ModelsDaftarLaporan::where('created_by', auth()->id()) // Filter berdasarkan user yang login
+            ->where(function ($query) { // Mengelompokkan kondisi pencarian
+                $query->where('provinsi', 'ilike', '%' . $this->search . '%')
+                    ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
+                    ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
+                    ->orWhere('nama_program', 'ilike', '%' . $this->search . '%');
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
         return view('livewire.daftar-laporan', ['laporan' => $laporan]);
     }
 }

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('kode_kecamatan');
             $table->string('bukti_penyaluran');
             $table->text('catatan')->nullable();
+            $table->string('created_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->useCurrent();
         });
