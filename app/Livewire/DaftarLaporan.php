@@ -20,7 +20,7 @@ class DaftarLaporan extends Component
     public $selectedRegency = null;
     public $selectedDistrict = null;
     public $nama_program = '';
-    public $jumlah_penerima = 0;
+    public $jumlah_penerima = null;
     public $provinsi = '';
     public $kabupaten = '';
     public $kecamatan = '';
@@ -31,6 +31,31 @@ class DaftarLaporan extends Component
     public $recordId = null;
     public $modalTitle = '';
     public $old_bukti_penyaluran = '';
+
+    protected $rules = [
+        'nama_program' => 'required',
+        'jumlah_penerima' => 'required|integer|min:1',
+        'selectedProvince' => 'required',
+        'selectedRegency' => 'required',
+        'selectedDistrict' => 'required',
+        'catatan' => 'nullable',
+    ];
+
+    protected $messages = [
+        'nama_program.required' => 'Nama program wajib diisi.',
+        'jumlah_penerima.required' => 'Jumlah penerima wajib diisi.',
+        'jumlah_penerima.integer' => 'Jumlah penerima harus berupa angka.',
+        'jumlah_penerima.min' => 'Jumlah penerima minimal 1.',
+        'selectedProvince.required' => 'Provinsi harus dipilih.',
+        'selectedRegency.required' => 'Kabupaten/Kota harus dipilih.',
+        'selectedDistrict.required' => 'Kecamatan harus dipilih.',
+        'catatan.nullable' => 'Catatan bersifat opsional.',
+    ];
+
+    public function resetSearch()
+    {
+        $this->reset(['search']);
+    }
 
     public function openModal($action, $recordId = null)
     {
@@ -112,7 +137,6 @@ class DaftarLaporan extends Component
     }
     public function saveData()
     {
-        // $this->validate();
 
         if ($this->modalAction === 'edit') {
             $laporan = ModelsDaftarLaporan::findOrFail($this->recordId);
@@ -138,6 +162,14 @@ class DaftarLaporan extends Component
                 'catatan' => $this->catatan,
             ]);
         } else {
+            $this->rules['bukti_penyaluran'] = 'required|file|mimes:jpeg,png,pdf|max:2048';
+            $this->messages['bukti_penyaluran.required'] = 'Bukti penyaluran wajib diunggah.';
+            $this->messages['bukti_penyaluran.file'] = 'Bukti penyaluran harus berupa file.';
+            $this->messages['bukti_penyaluran.mimes'] = 'Bukti penyaluran harus berupa file dengan format: jpeg, png, pdf.';
+            $this->messages['bukti_penyaluran.max'] = 'Ukuran file bukti penyaluran tidak boleh lebih dari 2MB.';
+
+            $this->validate($this->rules);
+
             $originalFileName = $this->bukti_penyaluran->getClientOriginalName();
             $newFileName = time() . '_' . $originalFileName;
             $this->bukti_penyaluran->storeAs('public/bukti_penyaluran', $newFileName);
@@ -156,8 +188,9 @@ class DaftarLaporan extends Component
             ]);
         }
         $this->resetModal();
+        $this->resetSearch();
 
-        $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data standar berhasil disimpan."})');
+        $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data Laporan Bantuan berhasil disimpan."})');
     }
     public function delete()
     {
@@ -167,8 +200,9 @@ class DaftarLaporan extends Component
         }
         $standar->delete();
         $this->resetModal();
+        $this->resetSearch();
 
-        $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data standar berhasil dihapus."})');
+        $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data Laporan Bantuan berhasil dihapus."})');
     }
     public function mount()
     {

@@ -150,7 +150,7 @@
                                     class="text-red-500">*</span></span>
                         </div>
                         <select id="province" {{ $modalAction === 'lihat' ? 'disabled' : '' }}
-                            class="input input-bordered w-full input-md rounded-lg @error('provinsi') border-red-500 @enderror"
+                            class="input input-bordered w-full input-md rounded-lg @error('selectedProvince') border-red-500 @enderror"
                             wire:model.live='selectedProvince'>
                             <option value="">Pilih Provinsi</option>
                             @foreach ($provinces as $province)
@@ -158,7 +158,7 @@
                             @endforeach
                         </select>
 
-                        @error('provinsi')
+                        @error('selectedProvince')
                             <span class="text-red-500 text-sm error-message">{{ $message }}</span>
                         @enderror
                     </label>
