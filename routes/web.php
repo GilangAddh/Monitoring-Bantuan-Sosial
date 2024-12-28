@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\DaftarLaporan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,10 +20,26 @@ Route::get('/', function () {
 
 Route::middleware([
     'auth:sanctum',
-    config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+});
+
+Route::middleware([
+    'auth:sanctum',
+    'verified',
+    'role:admin'
+])->group(function () {
+    // Route::get('/daftar-laporan', DaftarVerifikasi::class)->name('daftar-verifikasi');
+
+});
+
+Route::middleware([
+    'auth:sanctum',
+    'verified',
+    'role:daerah'
+])->group(function () {
+    Route::get('/daftar-laporan', DaftarLaporan::class)->name('daftar-laporan');
 });
