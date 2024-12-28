@@ -38,6 +38,7 @@
                     <td>Jumlah Penerima</td>
                     <td>Provinsi</td>
                     <td>Kota</td>
+                    <td>Kecamatan</td>
                     <td>Bukti Penyaluran</td>
                     <th class="bg-[#60c0d0] shadow-xl">Aksi</th>
                 </tr>
@@ -57,6 +58,9 @@
                         </td>
                         <td>
                             {{ $item->kabupaten }}
+                        </td>
+                        <td>
+                            {{ $item->kecamatan }}
                         </td>
                         <td>
                             <a href="{{ asset('storage/bukti_penyaluran/' . $item->bukti_penyaluran) }}"
@@ -81,7 +85,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">Tidak ada data yang ditemukan.</td>
+                        <td colspan="8" class="text-center">Tidak ada data yang ditemukan.</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -31,6 +31,7 @@ class DaftarLaporan extends Component
     public $recordId = null;
     public $modalTitle = '';
     public $old_bukti_penyaluran = '';
+    public $search = '';
 
     protected $rules = [
         'nama_program' => 'required',
@@ -210,7 +211,11 @@ class DaftarLaporan extends Component
     }
     public function render()
     {
-        $laporan = ModelsDaftarLaporan::orderBy("id", "desc")->paginate(10);
+        $laporan = ModelsDaftarLaporan::where('provinsi', 'ilike', '%' . $this->search . '%')
+            ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
+            ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
+            ->orWhere('nama_program', 'ilike', '%' . $this->search . '%')
+            ->orderBy("id", "desc")->paginate(10);
         return view('livewire.daftar-laporan', ['laporan' => $laporan]);
     }
 }
