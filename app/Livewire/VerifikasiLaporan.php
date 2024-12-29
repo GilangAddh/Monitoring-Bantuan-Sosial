@@ -34,6 +34,7 @@ class VerifikasiLaporan extends Component
     public $search = '';
     public $status = '';
     public $alasan = '';
+    public $tanggal_penyaluran = '';
 
     protected $rules = [
         'status' => 'required',
@@ -62,7 +63,7 @@ class VerifikasiLaporan extends Component
     public function resetModal()
     {
         $this->resetValidation();
-        $this->reset(['isModalOpen', 'modalTitle', 'modalAction', 'recordId', 'nama_program', 'jumlah_penerima', 'selectedProvince', 'selectedRegency', 'selectedDistrict', 'bukti_penyaluran', 'catatan', 'old_bukti_penyaluran', 'status', 'alasan']);
+        $this->reset(['isModalOpen', 'modalTitle', 'modalAction', 'recordId', 'nama_program', 'jumlah_penerima', 'selectedProvince', 'selectedRegency', 'selectedDistrict', 'bukti_penyaluran', 'catatan', 'old_bukti_penyaluran', 'status', 'alasan', 'tanggal_penyaluran']);
     }
 
     public function fetchProvinces()
@@ -123,6 +124,7 @@ class VerifikasiLaporan extends Component
         $this->catatan = $laporan->catatan;
         $this->fetchRegencies($this->selectedProvince);
         $this->fetchDistricts($this->selectedRegency);
+        $this->tanggal_penyaluran = $laporan->tanggal_penyaluran;
     }
     public function saveData()
     {
@@ -162,8 +164,8 @@ class VerifikasiLaporan extends Component
                 ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
                 ->orWhere('nama_program', 'ilike', '%' . $this->search . '%');
         })
-            ->orderBy('status', 'asc') // Urutkan berdasarkan status terkecil
-            ->orderBy('id', 'desc')   // Urutkan berdasarkan ID menurun setelah status
+            ->orderBy('status', 'asc')
+            ->orderBy('id', 'desc')
             ->paginate(10);
 
         return view('livewire.verifikasi-laporan', ['laporan' => $laporan]);

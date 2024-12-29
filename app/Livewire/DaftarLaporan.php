@@ -32,6 +32,9 @@ class DaftarLaporan extends Component
     public $modalTitle = '';
     public $old_bukti_penyaluran = '';
     public $search = '';
+    public $status = '';
+    public $alasan = '';
+    public $tanggal_penyaluran = '';
 
     protected $rules = [
         'nama_program' => 'required',
@@ -40,6 +43,7 @@ class DaftarLaporan extends Component
         'selectedRegency' => 'required',
         'selectedDistrict' => 'required',
         'catatan' => 'nullable',
+        'tanggal_penyaluran' => 'required',
     ];
 
     protected $messages = [
@@ -51,6 +55,7 @@ class DaftarLaporan extends Component
         'selectedRegency.required' => 'Kabupaten/Kota harus dipilih.',
         'selectedDistrict.required' => 'Kecamatan harus dipilih.',
         'catatan.nullable' => 'Catatan bersifat opsional.',
+        'tanggal_penyaluran.required' => 'Tanggal Penyaluran harus dipilih.',
     ];
 
     public function resetSearch()
@@ -74,7 +79,7 @@ class DaftarLaporan extends Component
     public function resetModal()
     {
         $this->resetValidation();
-        $this->reset(['isModalOpen', 'modalTitle', 'modalAction', 'recordId', 'nama_program', 'jumlah_penerima', 'selectedProvince', 'selectedRegency', 'selectedDistrict', 'bukti_penyaluran', 'catatan', 'old_bukti_penyaluran']);
+        $this->reset(['isModalOpen', 'modalTitle', 'modalAction', 'recordId', 'nama_program', 'jumlah_penerima', 'selectedProvince', 'selectedRegency', 'selectedDistrict', 'bukti_penyaluran', 'catatan', 'old_bukti_penyaluran', 'tanggal_penyaluran', 'status', 'alasan']);
     }
 
     public function fetchProvinces()
@@ -135,6 +140,9 @@ class DaftarLaporan extends Component
         $this->catatan = $laporan->catatan;
         $this->fetchRegencies($this->selectedProvince);
         $this->fetchDistricts($this->selectedRegency);
+        $this->status = $laporan->status;
+        $this->alasan  = $laporan->alasan;
+        $this->tanggal_penyaluran = $laporan->tanggal_penyaluran;
     }
     public function saveData()
     {
@@ -161,6 +169,7 @@ class DaftarLaporan extends Component
                 'kode_kecamatan' => $this->selectedDistrict,
                 'bukti_penyaluran' => $newFileName,
                 'catatan' => $this->catatan,
+                'tanggal_penyaluran' => $this->tanggal_penyaluran,
             ]);
         } else {
             $this->rules['bukti_penyaluran'] = 'required|file|mimes:jpeg,png,pdf|max:2048';
@@ -188,6 +197,7 @@ class DaftarLaporan extends Component
                 'catatan' => $this->catatan,
                 'created_by' => auth()->id(),
                 'status' => '1',
+                'tanggal_penyaluran' => $this->tanggal_penyaluran,
             ]);
         }
         $this->resetModal();
@@ -213,8 +223,8 @@ class DaftarLaporan extends Component
     }
     public function render()
     {
-        $laporan = ModelsDaftarLaporan::where('created_by', auth()->id()) // Filter berdasarkan user yang login
-            ->where(function ($query) { // Mengelompokkan kondisi pencarian
+        $laporan = ModelsDaftarLaporan::where('created_by', auth()->id())
+            ->where(function ($query) {
                 $query->where('provinsi', 'ilike', '%' . $this->search . '%')
                     ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
                     ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')

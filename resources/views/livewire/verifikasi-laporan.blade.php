@@ -33,6 +33,7 @@
                     <td>Kota</td>
                     <td>Kecamatan</td>
                     <td>Bukti Penyaluran</td>
+                    <td>Tanggal Penyaluran</td>
                     <td>Status</td>
                     <th class="bg-[#60c0d0] shadow-xl">Aksi</th>
                 </tr>
@@ -56,11 +57,14 @@
                         <td>
                             {{ $item->kecamatan }}
                         </td>
-                        <td>
+                        <td class="max-w-64">
                             <a href="{{ asset('storage/bukti_penyaluran/' . $item->bukti_penyaluran) }}"
                                 class="link link-hover text-blue-500" target="_blank">
                                 Download {{ $item->bukti_penyaluran }}
                             </a>
+                        </td>
+                        <td>
+                            {{ $item->tanggal_penyaluran }}
                         </td>
                         <td>
                             <div

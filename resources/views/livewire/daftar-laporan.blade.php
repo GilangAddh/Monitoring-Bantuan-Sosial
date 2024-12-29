@@ -39,7 +39,9 @@
                     <td>Provinsi</td>
                     <td>Kota</td>
                     <td>Kecamatan</td>
-                    <td>Bukti Penyaluran</td>
+                    <td class="max-w-64">Bukti Penyaluran</td>
+                    <td>Tanggal Penyaluran</td>
+                    <td>Status</td>
                     <th class="bg-[#60c0d0] shadow-xl">Aksi</th>
                 </tr>
             </thead>
@@ -62,24 +64,41 @@
                         <td>
                             {{ $item->kecamatan }}
                         </td>
-                        <td>
+                        <td class="max-w-64">
                             <a href="{{ asset('storage/bukti_penyaluran/' . $item->bukti_penyaluran) }}"
                                 class="link link-hover text-blue-500" target="_blank">
                                 Download {{ $item->bukti_penyaluran }}
                             </a>
                         </td>
+                        <td>
+                            {{ $item->tanggal_penyaluran }}
+                        </td>
+                        <td>
+                            <div
+                                class="badge {{ $item->status == 2
+                                    ? 'bg-[#60C0D0]'
+                                    : ($item->status == 3
+                                        ? 'bg-[#ff5861]'
+                                        : ($item->status == 1
+                                            ? 'bg-yellow-500'
+                                            : 'bg-gray-400')) }} p-3 text-white border-none">
+                                {{ $item->status == 1 ? 'Pending' : ($item->status == 2 ? 'Disetujui' : ($item->status == 3 ? 'Ditolak' : 'Tidak Diketahui')) }}
+                            </div>
 
+                        </td>
                         <th class="shadow-xl max-w-48">
                             <div class="flex justify-center items-center space-x-2">
                                 <button wire:click="openModal('lihat', {{ $item->id }})">
                                     <i class="fas fa-eye text-black"></i>
                                 </button>
-                                <button wire:click="openModal('edit', {{ $item->id }})">
-                                    <i class="fas fa-edit text-black"></i>
-                                </button>
-                                <button wire:click="openModal('hapus', {{ $item->id }})">
-                                    <i class="fas fa-trash text-black"></i>
-                                </button>
+                                @if ($item->status == 1)
+                                    <button wire:click="openModal('edit', {{ $item->id }})">
+                                        <i class="fas fa-edit text-black"></i>
+                                    </button>
+                                    <button wire:click="openModal('hapus', {{ $item->id }})">
+                                        <i class="fas fa-trash text-black"></i>
+                                    </button>
+                                @endif
                             </div>
                         </th>
                     </tr>
@@ -230,6 +249,19 @@
                             </a>
                         @endif
                         @error('bukti_penyaluran')
+                            <span class="text-red-500 text-sm error-message">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <label class="form-control w-full mb-2">
+                        <div class="label">
+                            <span class="label-text md:text-[16px]">Tanggal Penyaluran <span
+                                    class="text-red-500">*</span></span>
+                        </div>
+                        <input {{ $modalAction === 'lihat' ? 'disabled' : '' }} type="date"
+                            wire:model="tanggal_penyaluran" placeholder="Masukkan jumlah penerima"
+                            class="input input-bordered w-full input-md @error('tanggal_penyaluran') border-red-500 @enderror" />
+
+                        @error('tanggal_penyaluran')
                             <span class="text-red-500 text-sm error-message">{{ $message }}</span>
                         @enderror
                     </label>

@@ -9,5 +9,5 @@ class DaftarLaporan extends Model
 {
     use HasFactory;
     protected $table = 'daftar_laporan';
-    protected $fillable = ['nama_program', 'jumlah_penerima', 'provinsi', 'kabupaten', 'kecamatan', 'kode_provinsi', 'kode_kabupaten', 'kode_kecamatan', 'bukti_penyaluran', 'catatan', 'created_by', 'status', 'alasan'];
+    protected $fillable = ['nama_program', 'jumlah_penerima', 'provinsi', 'kabupaten', 'kecamatan', 'kode_provinsi', 'kode_kabupaten', 'kode_kecamatan', 'bukti_penyaluran', 'catatan', 'created_by', 'status', 'alasan', 'tanggal_penyaluran'];
 }

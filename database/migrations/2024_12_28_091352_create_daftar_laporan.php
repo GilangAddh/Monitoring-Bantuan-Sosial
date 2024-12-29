@@ -25,6 +25,7 @@ return new class extends Migration
             $table->text('catatan')->nullable();
             $table->string('status');
             $table->text('alasan')->nullable();
+            $table->date('tanggal_penyaluran');
             $table->string('created_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->useCurrent();
