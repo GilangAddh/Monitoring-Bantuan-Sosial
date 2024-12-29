@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\DaftarLaporan;
 use Livewire\Component;
+use App\Charts\GrafikPenerima;
 
 class Dashboard extends Component
 {
@@ -18,7 +19,6 @@ class Dashboard extends Component
     public $penerima_blt = 0;
     public $penerima_bansos = 0;
     public $penerima_rtlh = 0;
-    public $chartData = [];
 
     public function mount()
     {
@@ -36,6 +36,11 @@ class Dashboard extends Component
     }
     public function render()
     {
-        return view('livewire.dashboard');
+        $grafikPenerima = new GrafikPenerima(new \ArielMejiaDev\LarapexCharts\LarapexChart());
+        $chart = $grafikPenerima->build();
+
+        return view('livewire.dashboard', [
+            'chart' => $chart
+        ]);
     }
 }

@@ -10,6 +10,12 @@
     <h1 class="font-bold text-2xl">Dashboard</h1>
     <div class="my-4">
         <div class="rounded-lg border-2 border-[#60C0D0] border-separate p-8 my-4">
+            <div>{!! $chart->container() !!}</div>
+            <script src="{{ $chart->cdn() }}"></script>
+            {!! $chart->script() !!}
+        </div>
+
+        <div class="rounded-lg border-2 border-[#60C0D0] border-separate p-8 my-4">
             <h1 class="font-bold text-xl">Total Laporan</h1>
             <div class="flex flex-wrap justify-start gap-4">
                 <div class="card bg-base-100 w-80 shadow-xl">
