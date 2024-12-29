@@ -159,10 +159,10 @@ class VerifikasiLaporan extends Component
     public function render()
     {
         $laporan = DaftarLaporan::where(function ($query) {
-            $query->where('provinsi', 'ilike', '%' . $this->search . '%')
-                ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
-                ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
-                ->orWhere('nama_program', 'ilike', '%' . $this->search . '%');
+            $query->where('provinsi', 'like', '%' . $this->search . '%')
+                ->orWhere('kabupaten', 'like', '%' . $this->search . '%')
+                ->orWhere('kecamatan', 'like', '%' . $this->search . '%')
+                ->orWhere('nama_program', 'like', '%' . $this->search . '%');
         })
             ->orderBy('status', 'asc')
             ->orderBy('id', 'desc')

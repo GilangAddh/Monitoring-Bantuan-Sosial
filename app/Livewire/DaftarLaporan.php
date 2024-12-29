@@ -225,10 +225,10 @@ class DaftarLaporan extends Component
     {
         $laporan = ModelsDaftarLaporan::where('created_by', auth()->id())
             ->where(function ($query) {
-                $query->where('provinsi', 'ilike', '%' . $this->search . '%')
-                    ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
-                    ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
-                    ->orWhere('nama_program', 'ilike', '%' . $this->search . '%');
+                $query->where('provinsi', 'like', '%' . $this->search . '%')
+                    ->orWhere('kabupaten', 'like', '%' . $this->search . '%')
+                    ->orWhere('kecamatan', 'like', '%' . $this->search . '%')
+                    ->orWhere('nama_program', 'like', '%' . $this->search . '%');
             })
             ->orderBy('id', 'desc')
             ->paginate(10);
