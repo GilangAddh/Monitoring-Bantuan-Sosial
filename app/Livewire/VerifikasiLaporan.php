@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\DaftarLaporan as ModelsDaftarLaporan;
+use App\Models\DaftarLaporan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -32,25 +32,15 @@ class VerifikasiLaporan extends Component
     public $modalTitle = '';
     public $old_bukti_penyaluran = '';
     public $search = '';
+    public $status = '';
+    public $alasan = '';
 
     protected $rules = [
-        'nama_program' => 'required',
-        'jumlah_penerima' => 'required|integer|min:1',
-        'selectedProvince' => 'required',
-        'selectedRegency' => 'required',
-        'selectedDistrict' => 'required',
-        'catatan' => 'nullable',
+        'status' => 'required',
     ];
 
     protected $messages = [
-        'nama_program.required' => 'Nama program wajib diisi.',
-        'jumlah_penerima.required' => 'Jumlah penerima wajib diisi.',
-        'jumlah_penerima.integer' => 'Jumlah penerima harus berupa angka.',
-        'jumlah_penerima.min' => 'Jumlah penerima minimal 1.',
-        'selectedProvince.required' => 'Provinsi harus dipilih.',
-        'selectedRegency.required' => 'Kabupaten/Kota harus dipilih.',
-        'selectedDistrict.required' => 'Kecamatan harus dipilih.',
-        'catatan.nullable' => 'Catatan bersifat opsional.',
+        'status.required' => 'Status Verifikasi wajib diisi.',
     ];
 
     public function resetSearch()
@@ -64,17 +54,15 @@ class VerifikasiLaporan extends Component
         $this->modalAction = $action;
         $this->modalTitle = ucfirst($action) . ' Laporan Penyaluran Bantuan ';
 
-        if (in_array($action, ['edit', 'lihat', 'hapus']) && $recordId) {
-            $this->recordId = $recordId;
-            $this->loadRecordData();
-        }
+        $this->recordId = $recordId;
+        $this->loadRecordData();
 
         $this->isModalOpen = true;
     }
     public function resetModal()
     {
         $this->resetValidation();
-        $this->reset(['isModalOpen', 'modalTitle', 'modalAction', 'recordId', 'nama_program', 'jumlah_penerima', 'selectedProvince', 'selectedRegency', 'selectedDistrict', 'bukti_penyaluran', 'catatan', 'old_bukti_penyaluran']);
+        $this->reset(['isModalOpen', 'modalTitle', 'modalAction', 'recordId', 'nama_program', 'jumlah_penerima', 'selectedProvince', 'selectedRegency', 'selectedDistrict', 'bukti_penyaluran', 'catatan', 'old_bukti_penyaluran', 'status', 'alasan']);
     }
 
     public function fetchProvinces()
@@ -122,7 +110,7 @@ class VerifikasiLaporan extends Component
     }
     private function loadRecordData()
     {
-        $laporan = ModelsDaftarLaporan::findOrFail($this->recordId);
+        $laporan = DaftarLaporan::findOrFail($this->recordId);
         $this->nama_program = $laporan->nama_program;
         $this->jumlah_penerima = $laporan->jumlah_penerima;
         $this->provinsi = $laporan->provinsi;
@@ -138,61 +126,28 @@ class VerifikasiLaporan extends Component
     }
     public function saveData()
     {
-
-        if ($this->modalAction === 'edit') {
-            $laporan = ModelsDaftarLaporan::findOrFail($this->recordId);
-
-            if ($this->bukti_penyaluran) {
-                $originalFileName = $this->bukti_penyaluran->getClientOriginalName();
-                $newFileName = time() . '_' . $originalFileName;
-                $this->bukti_penyaluran->storeAs('public/bukti_penyaluran', $newFileName);
-            } else {
-                $newFileName = $this->old_bukti_penyaluran;
-            }
-
+        $laporan = DaftarLaporan::findOrFail($this->recordId);
+        if ($this->status == '2') {
+            $this->validate();
             $laporan->update([
-                'nama_program' => $this->nama_program,
-                'jumlah_penerima' => $this->jumlah_penerima,
-                'provinsi' => $this->provinsi['name'] ?? $laporan->provinsi,
-                'kabupaten' => $this->kabupaten['name'] ?? $laporan->kabupaten,
-                'kecamatan' => $this->kecamatan['name'] ?? $laporan->kecamatan,
-                'kode_provinsi' => $this->selectedProvince,
-                'kode_kabupaten' => $this->selectedRegency,
-                'kode_kecamatan' => $this->selectedDistrict,
-                'bukti_penyaluran' => $newFileName,
-                'catatan' => $this->catatan,
+                'status' => $this->status,
+                'alasan' => $this->alasan,
             ]);
         } else {
-            $this->rules['bukti_penyaluran'] = 'required|file|mimes:jpeg,png,pdf|max:2048';
-            $this->messages['bukti_penyaluran.required'] = 'Bukti penyaluran wajib diunggah.';
-            $this->messages['bukti_penyaluran.file'] = 'Bukti penyaluran harus berupa file.';
-            $this->messages['bukti_penyaluran.mimes'] = 'Bukti penyaluran harus berupa file dengan format: jpeg, png, pdf.';
-            $this->messages['bukti_penyaluran.max'] = 'Ukuran file bukti penyaluran tidak boleh lebih dari 2MB.';
+            $this->rules['alasan'] = 'required';
+            $this->messages['alasan.required'] = 'Alasan Penolakan wajib diisi.';
+            $this->validate();
 
-            $this->validate($this->rules);
-
-            $originalFileName = $this->bukti_penyaluran->getClientOriginalName();
-            $newFileName = time() . '_' . $originalFileName;
-            $this->bukti_penyaluran->storeAs('public/bukti_penyaluran', $newFileName);
-
-            ModelsDaftarLaporan::create([
-                'nama_program' => $this->nama_program,
-                'jumlah_penerima' => $this->jumlah_penerima,
-                'provinsi' => $this->provinsi['name'] ?? null,
-                'kabupaten' => $this->kabupaten['name'] ?? null,
-                'kecamatan' => $this->kecamatan['name'] ?? null,
-                'kode_provinsi' => $this->selectedProvince,
-                'kode_kabupaten' => $this->selectedRegency,
-                'kode_kecamatan' => $this->selectedDistrict,
-                'bukti_penyaluran' => $newFileName,
-                'catatan' => $this->catatan,
-                'created_by' => auth()->id(),
+            $laporan->update([
+                'status' => $this->status,
+                'alasan' => $this->alasan,
             ]);
         }
+
         $this->resetModal();
         $this->resetSearch();
 
-        $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data Laporan Bantuan berhasil disimpan."})');
+        $this->js('SwalGlobal.fire({icon: "success", title: "Berhasil", text: "Data Laporan Bantuan berhasil diverifikasi."})');
     }
 
     public function mount()
@@ -201,13 +156,14 @@ class VerifikasiLaporan extends Component
     }
     public function render()
     {
-        $laporan = ModelsDaftarLaporan::where(function ($query) { // Mengelompokkan kondisi pencarian
+        $laporan = DaftarLaporan::where(function ($query) {
             $query->where('provinsi', 'ilike', '%' . $this->search . '%')
                 ->orWhere('kabupaten', 'ilike', '%' . $this->search . '%')
                 ->orWhere('kecamatan', 'ilike', '%' . $this->search . '%')
                 ->orWhere('nama_program', 'ilike', '%' . $this->search . '%');
         })
-            ->orderBy('id', 'desc')
+            ->orderBy('status', 'asc') // Urutkan berdasarkan status terkecil
+            ->orderBy('id', 'desc')   // Urutkan berdasarkan ID menurun setelah status
             ->paginate(10);
 
         return view('livewire.verifikasi-laporan', ['laporan' => $laporan]);

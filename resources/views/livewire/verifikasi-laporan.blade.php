@@ -20,13 +20,6 @@
             </svg>
         </label>
 
-        <div class="flex justify-end space-x-4">
-            <button class="btn text-white btn-sm bg-[#60c0d0] border-none px-3 text-sm"
-                wire:click="openModal('tambah')">
-                Tambah
-                <i class="fa-solid fa-plus"></i>
-            </button>
-        </div>
     </div>
 
     <div class="overflow-x-auto overflow-y-hidden border border-1 rounded-lg">
@@ -40,6 +33,7 @@
                     <td>Kota</td>
                     <td>Kecamatan</td>
                     <td>Bukti Penyaluran</td>
+                    <td>Status</td>
                     <th class="bg-[#60c0d0] shadow-xl">Aksi</th>
                 </tr>
             </thead>
@@ -68,15 +62,29 @@
                                 Download {{ $item->bukti_penyaluran }}
                             </a>
                         </td>
+                        <td>
+                            <div
+                                class="badge {{ $item->status == 2
+                                    ? 'bg-[#60C0D0]'
+                                    : ($item->status == 3
+                                        ? 'bg-[#ff5861]'
+                                        : ($item->status == 1
+                                            ? 'bg-yellow-500'
+                                            : 'bg-gray-400')) }} p-3 text-white border-none">
+                                {{ $item->status == 1 ? 'Pending' : ($item->status == 2 ? 'Disetujui' : ($item->status == 3 ? 'Ditolak' : 'Tidak Diketahui')) }}
+                            </div>
 
+                        </td>
                         <th class="shadow-xl max-w-48">
                             <div class="flex justify-center items-center space-x-2">
                                 <button wire:click="openModal('lihat', {{ $item->id }})">
                                     <i class="fas fa-eye text-black"></i>
                                 </button>
-                                <button wire:click="openModal('verifikasi', {{ $item->id }})">
-                                    <i class="fa-solid fa-circle-check"></i>
-                                </button>
+                                @if ($item->status == 1)
+                                    <button wire:click="openModal('verifikasi', {{ $item->id }})">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                    </button>
+                                @endif
                             </div>
                         </th>
                     </tr>
@@ -116,17 +124,19 @@
                             <span class="text-red-500 text-sm error-message">{{ $message }}</span>
                         @enderror
                     </label>
-                    <label class="form-control w-full mb-2">
-                        <div class="label">
-                            <span class="label-text md:text-[16px]">Alasan Penolakan</span>
-                        </div>
-                        <textarea disabled class="textarea textarea-bordered w-full @error('alasan') border-red-500 @enderror" rows="3"
-                            wire:model='alasan'></textarea>
+                    @if ($status == 3)
+                        <label class="form-control w-full mb-2">
+                            <div class="label">
+                                <span class="label-text md:text-[16px]">Alasan Penolakan</span>
+                            </div>
+                            <textarea class="textarea textarea-bordered w-full @error('alasan') border-red-500 @enderror" rows="3"
+                                wire:model='alasan'></textarea>
 
-                        @error('alasan')
-                            <span class="text-red-500 text-sm error-message">{{ $message }}</span>
-                        @enderror
-                    </label>
+                            @error('alasan')
+                                <span class="text-red-500 text-sm error-message">{{ $message }}</span>
+                            @enderror
+                        </label>
+                    @endif
                     <div class="modal-action">
                         <div class="flex space-x-2 justify-end">
                             <button type="button"
@@ -270,9 +280,6 @@
                             <button type="button"
                                 class="btn btn-sm btn-outline text-[#60c0d0] border-[#60c0d0] hover:bg-[#60c0d0] hover:text-white hover:border-none"
                                 wire:click="resetModal">Tutup</button>
-                            @if ($modalAction != 'lihat')
-                                <button type="submit" class="btn btn-sm bg-[#60c0d0] text-white">Simpan</button>
-                            @endif
                         </div>
                     </div>
                 </form>
